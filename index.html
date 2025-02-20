@@ -8,36 +8,32 @@
 </head>
 <body>
     <div id="container">
-        <h1>Tic-Tac-Toe AI</h1>
-        
-        <div id="leaderboard">
-            <h3>Leaderboard</h3>
-            <p>Wins: <span id="wins">0</span></p>
-            <p>Losses: <span id="losses">0</span></p>
-            <button onclick="resetLeaderboard()">Reset Leaderboard</button>
+        <!-- Left Side: Game Board -->
+        <div id="game-area">
+            <h1>Tic-Tac-Toe</h1>
+            <div id="board"></div>
+            <p id="status">Player's Turn</p>
+            <button onclick="restartGame()">Restart</button>
+            <p id="timer">Time: 00:00</p>
         </div>
 
-        <p>Select AI Difficulty:</p>
-        <div class="difficulty-buttons">
-            <button onclick="startGame('easy')">Easy</button>
-            <button onclick="startGame('medium')">Medium</button>
-            <button onclick="startGame('hard')">Hard</button>
-        </div>
+        <!-- Right Side: Settings & Leaderboard -->
+        <div id="sidebar">
+            <h2>Settings</h2>
+            <label>Game Mode:</label>
+            <button onclick="setGameMode('human')">Play with Human</button>
+            <button onclick="setGameMode('ai')">Play with AI</button>
 
-        <div id="board">
-            <div class="cell" onclick="playerMove(0)"></div>
-            <div class="cell" onclick="playerMove(1)"></div>
-            <div class="cell" onclick="playerMove(2)"></div>
-            <div class="cell" onclick="playerMove(3)"></div>
-            <div class="cell" onclick="playerMove(4)"></div>
-            <div class="cell" onclick="playerMove(5)"></div>
-            <div class="cell" onclick="playerMove(6)"></div>
-            <div class="cell" onclick="playerMove(7)"></div>
-            <div class="cell" onclick="playerMove(8)"></div>
-        </div>
+            <div id="difficulty-settings">
+                <h3>AI Difficulty</h3>
+                <button onclick="setDifficulty('easy')">Easy</button>
+                <button onclick="setDifficulty('hard')">Hard</button>
+            </div>
 
-        <h2 id="status"></h2>
-        <button id="restart" onclick="resetGame()">Restart Game</button>
+            <h2>Leaderboard</h2>
+            <p>Player Wins: <span id="playerWins">0</span></p>
+            <p>AI Wins: <span id="aiWins">0</span></p>
+        </div>
     </div>
 
     <script src="script.js"></script>
