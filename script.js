@@ -4,7 +4,7 @@ let gameActive = false;
 let aiLevel = "easy";
 
 // Set Background Image
-document.body.style.backgroundImage = "url('your-background-image.jpg')";
+document.body.style.backgroundImage = "url('https://raw.githubusercontent.com/KalakkalKarthikeyan/PLAYWITHAI/refs/heads/main/360_F_279754521_z5fz8zm9AoqIriAaeKOKWPTmuh1Xr2Qg.jpg')";
 
 // Load leaderboard from local storage
 let wins = localStorage.getItem("wins") || 0;
