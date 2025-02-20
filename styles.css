@@ -1,41 +1,71 @@
 body {
-    text-align: center;
     font-family: Arial, sans-serif;
-    background-image: url("https://your-image-link-here.com/image.jpg");
+    text-align: center;
+    background-image: url('your-background-image.jpg'); /* Set your background image */
     background-size: cover;
     background-position: center;
-}
-
-h1 {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: white;
-    text-shadow: 2px 2px 4px black;
 }
 
-.board {
+#container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#board {
     display: grid;
     grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
-    gap: 10px;
-    justify-content: center;
-    margin-top: 20px;
+    grid-gap: 5px;
+    margin: 20px auto;
 }
 
 .cell {
     width: 100px;
     height: 100px;
+    background: white;
+    color: black;
     font-size: 2em;
     display: flex;
-    align-items: center;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
+    align-items: center;
     cursor: pointer;
-    font-weight: bold;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+.cell:hover {
+    background: lightgray;
 }
 
 button {
-    margin-top: 20px;
     padding: 10px 20px;
-    font-size: 18px;
+    font-size: 16px;
+    margin: 5px;
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.difficulty-buttons button {
+    background: #4CAF50;
+    color: white;
+}
+
+#restart {
+    background: #f44336;
+    color: white;
+}
+
+#leaderboard {
+    margin-bottom: 20px;
+}
+
+#leaderboard button {
+    background: #2196F3;
+    color: white;
 }
