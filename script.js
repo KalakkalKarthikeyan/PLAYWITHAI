@@ -1,105 +1,131 @@
 let board = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
-let gameActive = false;
-let aiLevel = "easy";
+let gameMode = "human";
+let aiDifficulty = "easy";
+let gameActive = true;
+let timer;
+let seconds = 0;
 
-// Set Background Image
-document.body.style.backgroundImage = "url('https://raw.githubusercontent.com/KalakkalKarthikeyan/PLAYWITHAI/refs/heads/main/360_F_279754521_z5fz8zm9AoqIriAaeKOKWPTmuh1Xr2Qg.jpg')";
+// Load leaderboard
+let playerWins = localStorage.getItem("playerWins") || 0;
+let aiWins = localStorage.getItem("aiWins") || 0;
+document.getElementById("playerWins").innerText = playerWins;
+document.getElementById("aiWins").innerText = aiWins;
 
-// Load leaderboard from local storage
-let wins = localStorage.getItem("wins") || 0;
-let losses = localStorage.getItem("losses") || 0;
-document.getElementById("wins").innerText = wins;
-document.getElementById("losses").innerText = losses;
-
-function startGame(level) {
-    aiLevel = level;
-    resetGame();
-    gameActive = true;
+// Start timer
+function startTimer() {
+    clearInterval(timer);
+    seconds = 0;
+    timer = setInterval(() => {
+        seconds++;
+        document.getElementById("timer").innerText = `Time: ${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+    }, 1000);
 }
 
-function playerMove(index) {
-    if (board[index] === "" && gameActive) {
-        board[index] = currentPlayer;
-        updateBoard();
-        checkWinner();
-        if (gameActive) aiMove();
+// Initialize board
+function createBoard() {
+    let boardDiv = document.getElementById("board");
+    boardDiv.innerHTML = "";
+    board.forEach((cell, index) => {
+        let cellDiv = document.createElement("div");
+        cellDiv.classList.add("cell");
+        cellDiv.dataset.index = index;
+        cellDiv.innerText = cell;
+        cellDiv.onclick = () => makeMove(index);
+        boardDiv.appendChild(cellDiv);
+    });
+}
+createBoard();
+
+function makeMove(index) {
+    if (!gameActive || board[index] !== "") return;
+
+    board[index] = currentPlayer;
+    createBoard();
+    checkWin();
+
+    if (gameMode === "ai" && gameActive) {
+        setTimeout(aiMove, 500);
     }
 }
 
-function aiMove() {
-    let emptyCells = board.map((val, index) => (val === "" ? index : null)).filter(val => val !== null);
-    if (emptyCells.length === 0) return;
-
-    let move;
-    if (aiLevel === "easy") {
-        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    } else if (aiLevel === "medium") {
-        move = emptyCells.length > 1 ? emptyCells[0] : emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    } else {
-        move = minimax(board, "O").index;
-    }
-
-    board[move] = "O";
-    updateBoard();
-    checkWinner();
-}
-
-function checkWinner() {
-    const winningCombos = [
+function checkWin() {
+    const winPatterns = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8],
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
         [0, 4, 8], [2, 4, 6]
     ];
 
-    for (let combo of winningCombos) {
-        let [a, b, c] = combo;
+    winPatterns.forEach(pattern => {
+        let [a, b, c] = pattern;
         if (board[a] && board[a] === board[b] && board[a] === board[c]) {
             gameActive = false;
-            announceWinner(board[a]);
-            return;
+            document.getElementById("status").innerText = `${board[a]} Wins! 🎉`;
+            clearInterval(timer);
+            updateLeaderboard(board[a]);
         }
-    }
+    });
 
-    if (!board.includes("")) {
+    if (!board.includes("") && gameActive) {
         gameActive = false;
-        announceWinner("draw");
+        document.getElementById("status").innerText = "It's a Draw!";
+        clearInterval(timer);
     }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
 }
 
-function announceWinner(winner) {
-    let status = document.getElementById("status");
-
-    if (winner === "draw") {
-        status.innerText = "It's a Draw!";
-    } else if (winner === "X") {
-        status.innerText = "You Win!";
-        localStorage.setItem("wins", ++wins);
+function aiMove() {
+    if (!gameActive) return;
+    
+    let emptyCells = board.map((cell, index) => (cell === "" ? index : null)).filter(index => index !== null);
+    
+    let move;
+    if (aiDifficulty === "easy" && Math.random() < 0.8) {
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    } else if (aiDifficulty === "hard" && Math.random() < 0.85) {
+        move = bestMove();
     } else {
-        status.innerText = "AI Wins!";
-        localStorage.setItem("losses", ++losses);
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     }
 
-    document.getElementById("wins").innerText = wins;
-    document.getElementById("losses").innerText = losses;
+    board[move] = "O";
+    createBoard();
+    checkWin();
 }
 
-function resetGame() {
+function bestMove() {
+    return board.indexOf("");
+}
+
+function restartGame() {
     board = ["", "", "", "", "", "", "", "", ""];
     gameActive = true;
-    document.getElementById("status").innerText = "";
-    updateBoard();
+    currentPlayer = "X";
+    document.getElementById("status").innerText = "Player's Turn";
+    createBoard();
+    startTimer();
 }
 
-function updateBoard() {
-    document.querySelectorAll(".cell").forEach((cell, index) => {
-        cell.innerText = board[index];
-    });
+function setGameMode(mode) {
+    gameMode = mode;
+    restartGame();
 }
 
-function resetLeaderboard() {
-    localStorage.setItem("wins", 0);
-    localStorage.setItem("losses", 0);
-    document.getElementById("wins").innerText = 0;
-    document.getElementById("losses").innerText = 0;
+function setDifficulty(level) {
+    aiDifficulty = level;
+    restartGame();
 }
+
+function updateLeaderboard(winner) {
+    if (winner === "X") {
+        playerWins++;
+        localStorage.setItem("playerWins", playerWins);
+        document.getElementById("playerWins").innerText = playerWins;
+    } else if (winner === "O") {
+        aiWins++;
+        localStorage.setItem("aiWins", aiWins);
+        document.getElementById("aiWins").innerText = aiWins;
+    }
+}
+
