@@ -75,28 +75,22 @@ function checkWin() {
     currentPlayer = currentPlayer === "X" ? "O" : "X";
 }
 
-// AI Move with Probability-based Difficulty
 function aiMove() {
     if (!gameActive) return;
-
+    
     let emptyCells = board.map((cell, index) => (cell === "" ? index : null)).filter(index => index !== null);
-
+    
     let move;
-    let winChance;
+    let winProbability = {
+        easy: 0.65, // 65% chance player wins
+        normal: 0.45, // 45% chance player wins
+        hard: 0.05 // 5% chance player wins
+    };
 
-    // Adjust AI difficulty probability
-    if (aiDifficulty === "easy") {
-        winChance = 0.35;  // AI plays best move 35% of the time
-    } else if (aiDifficulty === "normal") {
-        winChance = 0.55;  // AI plays best move 55% of the time
-    } else if (aiDifficulty === "hard") {
-        winChance = 0.90;  // AI plays best move 90% of the time
-    }
-
-    if (Math.random() < winChance) {
-        move = bestMove();  // AI plays the best move
+    if (Math.random() > winProbability[aiDifficulty]) {
+        move = bestMove();
     } else {
-        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];  // AI makes a random move
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     }
 
     board[move] = "O";
@@ -104,7 +98,6 @@ function aiMove() {
     checkWin();
 }
 
-// AI's best move logic (Minimax can be implemented later for smarter AI)
 function bestMove() {
     return board.indexOf("");
 }
@@ -128,17 +121,14 @@ function setDifficulty(level) {
     restartGame();
 }
 
-// Update leaderboard
 function updateLeaderboard(winner) {
     if (winner === "X") {
         playerWins++;
         localStorage.setItem("playerWins", playerWins);
-        document.getElementById("playerWins").innerText = playerWins;
     } else if (winner === "O") {
         aiWins++;
         localStorage.setItem("aiWins", aiWins);
-        document.getElementById("aiWins").innerText = aiWins;
     }
+    document.getElementById("playerWins").innerText = playerWins;
+    document.getElementById("aiWins").innerText = aiWins;
 }
-
-
