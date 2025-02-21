@@ -75,18 +75,28 @@ function checkWin() {
     currentPlayer = currentPlayer === "X" ? "O" : "X";
 }
 
+// AI Move with Probability-based Difficulty
 function aiMove() {
     if (!gameActive) return;
-    
+
     let emptyCells = board.map((cell, index) => (cell === "" ? index : null)).filter(index => index !== null);
-    
+
     let move;
-    if (aiDifficulty === "easy" && Math.random() < 0.8) {
-        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    } else if (aiDifficulty === "hard" && Math.random() < 0.85) {
-        move = bestMove();
+    let winChance;
+
+    // Adjust AI difficulty probability
+    if (aiDifficulty === "easy") {
+        winChance = 0.35;  // AI plays best move 35% of the time
+    } else if (aiDifficulty === "normal") {
+        winChance = 0.55;  // AI plays best move 55% of the time
+    } else if (aiDifficulty === "hard") {
+        winChance = 0.90;  // AI plays best move 90% of the time
+    }
+
+    if (Math.random() < winChance) {
+        move = bestMove();  // AI plays the best move
     } else {
-        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];  // AI makes a random move
     }
 
     board[move] = "O";
@@ -94,6 +104,7 @@ function aiMove() {
     checkWin();
 }
 
+// AI's best move logic (Minimax can be implemented later for smarter AI)
 function bestMove() {
     return board.indexOf("");
 }
@@ -117,6 +128,7 @@ function setDifficulty(level) {
     restartGame();
 }
 
+// Update leaderboard
 function updateLeaderboard(winner) {
     if (winner === "X") {
         playerWins++;
@@ -128,4 +140,5 @@ function updateLeaderboard(winner) {
         document.getElementById("aiWins").innerText = aiWins;
     }
 }
+
 
