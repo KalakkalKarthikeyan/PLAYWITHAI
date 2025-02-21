@@ -3,113 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
-    <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            background-image: url('your-background-image-link-here'); /* Set background */
-            background-size: cover;
-            color: white;
-        }
-
-        h1 {
-            margin-top: 20px;
-        }
-
-        #game-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-top: 30px;
-        }
-
-        #controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-
-        .blue-btn { background-color: #007BFF; color: white; }
-        .red-btn { background-color: #FF5733; color: white; }
-        .green-btn { background-color: #28A745; color: white; }
-        .yellow-btn { background-color: #FFC107; color: black; }
-
-        #board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 5px;
-            margin: auto;
-        }
-
-        .cell {
-            width: 100px;
-            height: 100px;
-            background-color: white;
-            color: black;
-            font-size: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        #status, #timer {
-            font-size: 20px;
-            margin-top: 10px;
-        }
-
-        #leaderboard {
-            margin-top: 20px;
-        }
-
-    </style>
+    <title>Tic-Tac-Toe AI</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <h1>Tic Tac Toe</h1>
-
-    <div id="game-container">
-        <!-- Left Side (Controls) -->
-        <div id="controls">
-            <button class="blue-btn" onclick="setGameMode('human')">Play With Human</button>
-            <button class="red-btn" onclick="setGameMode('ai')">Play With AI</button>
+    <div id="container">
+        <!-- Left Side: Game Mode & Leaderboard -->
+        <div id="left-panel">
+            <h2>Game Mode</h2>
+            <button onclick="setGameMode('human')">Play With Human</button>
+            <button onclick="setGameMode('ai')">Play With AI</button>
             
-            <h3>Select Difficulty:</h3>
-            <button class="green-btn" onclick="setDifficulty('easy')">Easy</button>
-            <button class="yellow-btn" onclick="setDifficulty('normal')">Normal</button>
-            <button class="red-btn" onclick="setDifficulty('hard')">Hard</button>
-            
-            <button class="blue-btn" onclick="restartGame()">Restart Game</button>
+            <h2>AI Difficulty</h2>
+            <button onclick="setDifficulty('easy')">Easy</button>
+            <button onclick="setDifficulty('normal')">Normal</button>
+            <button onclick="setDifficulty('hard')">Hard</button>
+
+            <h2>Leaderboard</h2>
+            <p>Player Wins: <span id="playerWins">0</span></p>
+            <p>AI Wins: <span id="aiWins">0</span></p>
         </div>
 
-        <!-- Right Side (Game Board) -->
-        <div>
+        <!-- Middle: Game Board -->
+        <div id="game-area">
+            <h1>Tic-Tac-Toe</h1>
+            <div id="timer">Time: 00:00</div>
             <div id="board"></div>
-            <p id="status">Player's Turn</p>
-            <p id="timer">Time: 00:00</p>
-
-            <!-- Leaderboard -->
-            <div id="leaderboard">
-                <h3>Leaderboard</h3>
-                <p>Player Wins: <span id="playerWins">0</span></p>
-                <p>AI Wins: <span id="aiWins">0</span></p>
-            </div>
+            <h2 id="status">Player's Turn</h2>
+            <button id="restart" onclick="restartGame()">Restart</button>
         </div>
+
+        <!-- Right Side: Empty for future updates -->
+        <div id="right-panel"></div>
     </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
 
