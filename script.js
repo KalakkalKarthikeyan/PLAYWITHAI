@@ -1,80 +1,3 @@
-let board = ["", "", "", "", "", "", "", "", ""];
-let currentPlayer = "X";
-let gameMode = "human";
-let aiDifficulty = "easy";
-let gameActive = true;
-let timer;
-let seconds = 0;
-
-// Load leaderboard
-let playerWins = localStorage.getItem("playerWins") || 0;
-let aiWins = localStorage.getItem("aiWins") || 0;
-document.getElementById("playerWins").innerText = playerWins;
-document.getElementById("aiWins").innerText = aiWins;
-
-// Start timer
-function startTimer() {
-    clearInterval(timer);
-    seconds = 0;
-    timer = setInterval(() => {
-        seconds++;
-        document.getElementById("timer").innerText = `Time: ${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
-    }, 1000);
-}
-
-// Initialize board
-function createBoard() {
-    let boardDiv = document.getElementById("board");
-    boardDiv.innerHTML = "";
-    board.forEach((cell, index) => {
-        let cellDiv = document.createElement("div");
-        cellDiv.classList.add("cell");
-        cellDiv.dataset.index = index;
-        cellDiv.innerText = cell;
-        cellDiv.onclick = () => makeMove(index);
-        boardDiv.appendChild(cellDiv);
-    });
-}
-createBoard();
-
-function makeMove(index) {
-    if (!gameActive || board[index] !== "") return;
-
-    board[index] = currentPlayer;
-    createBoard();
-    checkWin();
-
-    if (gameMode === "ai" && gameActive) {
-        setTimeout(aiMove, 500);
-    }
-}
-
-function checkWin() {
-    const winPatterns = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6]
-    ];
-
-    winPatterns.forEach(pattern => {
-        let [a, b, c] = pattern;
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-            gameActive = false;
-            document.getElementById("status").innerText = `${board[a]} Wins! 🎉`;
-            clearInterval(timer);
-            updateLeaderboard(board[a]);
-        }
-    });
-
-    if (!board.includes("") && gameActive) {
-        gameActive = false;
-        document.getElementById("status").innerText = "It's a Draw!";
-        clearInterval(timer);
-    }
-
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-}
-
 function aiMove() {
     if (!gameActive) return;
     
@@ -82,15 +5,15 @@ function aiMove() {
     
     let move;
     let winProbability = {
-        easy: 0.65, // 65% chance player wins
-        normal: 0.45, // 45% chance player wins
-        hard: 0.05 // 5% chance player wins
+        easy: 0.35,  // 35% chance AI wins (65% player wins)
+        normal: 0.55, // 55% chance AI wins (45% player wins)
+        hard: 0.95    // 95% chance AI wins (5% player wins)
     };
 
-    if (Math.random() > winProbability[aiDifficulty]) {
-        move = bestMove();
+    if (Math.random() < winProbability[aiDifficulty]) {
+        move = bestMove();  // AI plays the best move
     } else {
-        move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        move = emptyCells[Math.floor(Math.random() * emptyCells.length)]; // AI makes a random mistake
     }
 
     board[move] = "O";
@@ -98,37 +21,65 @@ function aiMove() {
     checkWin();
 }
 
+// Minimax algorithm for best move
 function bestMove() {
-    return board.indexOf("");
+    return minimax(board, "O").index;
 }
 
-function restartGame() {
-    board = ["", "", "", "", "", "", "", "", ""];
-    gameActive = true;
-    currentPlayer = "X";
-    document.getElementById("status").innerText = "Player's Turn";
-    createBoard();
-    startTimer();
-}
+// Minimax Algorithm for AI decision-making
+function minimax(newBoard, player) {
+    let availableSpots = newBoard.map((cell, index) => (cell === "" ? index : null)).filter(index => index !== null);
 
-function setGameMode(mode) {
-    gameMode = mode;
-    restartGame();
-}
+    if (checkWinner("X")) return { score: -10 }; // Player wins
+    if (checkWinner("O")) return { score: 10 };  // AI wins
+    if (availableSpots.length === 0) return { score: 0 }; // Draw
 
-function setDifficulty(level) {
-    aiDifficulty = level;
-    restartGame();
-}
+    let moves = [];
 
-function updateLeaderboard(winner) {
-    if (winner === "X") {
-        playerWins++;
-        localStorage.setItem("playerWins", playerWins);
-    } else if (winner === "O") {
-        aiWins++;
-        localStorage.setItem("aiWins", aiWins);
+    for (let i = 0; i < availableSpots.length; i++) {
+        let move = {};
+        move.index = availableSpots[i];
+        newBoard[availableSpots[i]] = player;
+
+        if (player === "O") {
+            move.score = minimax(newBoard, "X").score;
+        } else {
+            move.score = minimax(newBoard, "O").score;
+        }
+
+        newBoard[availableSpots[i]] = "";
+        moves.push(move);
     }
-    document.getElementById("playerWins").innerText = playerWins;
-    document.getElementById("aiWins").innerText = aiWins;
+
+    let bestMove = 0;
+    if (player === "O") {
+        let bestScore = -Infinity;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].score > bestScore) {
+                bestScore = moves[i].score;
+                bestMove = i;
+            }
+        }
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].score < bestScore) {
+                bestScore = moves[i].score;
+                bestMove = i;
+            }
+        }
+    }
+
+    return moves[bestMove];
+}
+
+// Function to check winner
+function checkWinner(player) {
+    const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+    ];
+
+    return winPatterns.some(pattern => pattern.every(index => board[index] === player));
 }
